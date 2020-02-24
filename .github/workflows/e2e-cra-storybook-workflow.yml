@@ -12,7 +12,7 @@ on:
 name: "E2E CRA Storybook"
 jobs:
   chore:
-    name: "Validating Create-React-App"
+    name: "Validating Create-React-App Storybook"
     runs-on: self-hosted
 
     steps:
