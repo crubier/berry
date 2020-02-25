@@ -1539,7 +1539,6 @@ export class Project {
       optimizedLockfile[key] = {
         peerResolutions:peerResolutions,
         virtualOf:structUtils.stringifyLocator(structUtils.devirtualizeLocator(pkg)),
-        // virtualOf:structUtils.stringifyDescriptor(structUtils.devirtualizeDescriptor(descriptors[0])), // BAD
       };
     }
 
@@ -1571,34 +1570,42 @@ export class Project {
     const content = await xfs.readFilePromise(virtualStatePath, `utf8`);
     const virtualStateFileData: {[key:string]:{virtualOf:string,peerResolutions:{[key:string]:string}}} = parseSyml(content);
 
-    for (const [locatorHash, pkg] of this.originalPackages.entries()) {
-      const desc = structUtils.convertLocatorToDescriptor(pkg);
-      this.storedPackages.set(pkg.locatorHash, pkg);
-      this.storedDescriptors.set(desc.descriptorHash, desc);
-      this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
-    }
+    // for (const [locatorHash, pkg] of this.originalPackages.entries()) {
+    //   const desc = structUtils.convertLocatorToDescriptor(pkg);
+    //   this.storedPackages.set(pkg.locatorHash, pkg);
+    //   this.storedDescriptors.set(desc.descriptorHash, desc);
+    //   this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
+    // }
 
 
-    for (const [virtualEntryName, virtualEntry] of Object.entries(virtualStateFileData)) {
-      if (virtualEntryName === `__metadata`)
+    for (const [virtualEntryNames, virtualEntry] of Object.entries(virtualStateFileData)) {
+      if (virtualEntryNames === `__metadata`)
         continue;
-      const virtualLocator = structUtils.parseLocator(virtualEntryName);
-      const virtualDescriptor = structUtils.convertLocatorToDescriptor(virtualLocator);
 
-      const originalLocator = structUtils.parseLocator(virtualEntry.virtualOf);
-      const originalPackage = this.originalPackages.get(originalLocator.locatorHash);
 
-      if (!originalPackage)
-        throw new Error("Wowowowow could not find original package");
+      for (const virtualEntryName of virtualEntryNames.split(MULTIPLE_KEYS_REGEXP)) {
+        const descriptor = structUtils.parseDescriptor(virtualEntryName);
 
-      const virtualPackage = structUtils.renamePackage(originalPackage, virtualLocator);
-      for (const [name, resolution] of Object.entries(virtualEntry.peerResolutions))
-        virtualPackage.dependencies.set(name as IdentHash, structUtils.parseDescriptor(resolution));
+        this.storedDescriptors.set(descriptor.descriptorHash, descriptor);
 
-      this.storedPackages.set(virtualPackage.locatorHash, virtualPackage);
-      this.storedDescriptors.set(virtualDescriptor.descriptorHash, virtualDescriptor);
+        const virtualLocator = structUtils.parseLocator(virtualEntryName);
+        const virtualDescriptor = structUtils.convertLocatorToDescriptor(virtualLocator);
 
-      this.storedResolutions.set(virtualDescriptor.descriptorHash, virtualPackage.locatorHash);
+        const originalLocator = structUtils.parseLocator(virtualEntry.virtualOf);
+        const originalPackage = this.originalPackages.get(originalLocator.locatorHash);
+
+        if (!originalPackage)
+          throw new Error("Wowowowow could not find original package");
+
+        const virtualPackage = structUtils.renamePackage(originalPackage, virtualLocator);
+        for (const [name, resolution] of Object.entries(virtualEntry.peerResolutions))
+          virtualPackage.dependencies.set(name as IdentHash, structUtils.parseDescriptor(resolution));
+
+        this.storedPackages.set(virtualPackage.locatorHash, virtualPackage);
+        this.storedDescriptors.set(virtualDescriptor.descriptorHash, virtualDescriptor);
+
+        this.storedResolutions.set(virtualDescriptor.descriptorHash, virtualPackage.locatorHash);
+      }
     }
   }
 
