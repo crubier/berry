@@ -72,14 +72,46 @@ export default class RunCommand extends BaseCommand {
     await project.hydrateVirtualPackages();
     console.timeEnd("hydrateVirtualPackages");
     console.log(project.storedPackages.size);
+    console.log(project.storedDescriptors.size);
+    console.log(project.storedResolutions.size);
+    console.log(project.originalPackages.size);
+    console.log(project.    workspacesByCwd.size);
+    console.log(project.    workspacesByIdent.size);
+    console.log(project.    resolutionAliases.size);
 
-    // console.time("resolveEverything");
-    // await project.resolveEverything({
-    //   lockfileOnly: true,
-    //   report: new ThrowReport(),
-    // });
-    // console.timeEnd("resolveEverything");
-    // console.log(project.storedPackages.size);
+    const toto= project.storedPackages;
+
+    console.time("resolveEverything");
+    await project.resolveEverything({
+      lockfileOnly: true,
+      report: new ThrowReport(),
+    });
+    console.timeEnd("resolveEverything");
+    console.log(project.storedPackages.size);
+    console.log(project.storedDescriptors.size);
+    console.log(project.storedResolutions.size);
+    console.log(project.originalPackages.size);
+    console.log(project.    workspacesByCwd.size);
+    console.log(project.    workspacesByIdent.size);
+    console.log(project.    resolutionAliases.size);
+
+    const titi= project.storedPackages;
+
+    let nototo=0;
+    for (let key of titi.keys()) {
+      if (!toto.get(key)) {
+        nototo++;
+      }
+    }
+
+    let notiti=0;
+    for (let key of toto.keys()) {
+      if (!titi.get(key)) {
+        notiti++;
+      }
+    }
+
+    console.log(nototo,notiti);
 
     const effectiveLocator = this.topLevel
       ? project.topLevelWorkspace.anchoredLocator
