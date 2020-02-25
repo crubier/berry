@@ -79,39 +79,66 @@ export default class RunCommand extends BaseCommand {
     console.log(project.workspacesByIdent.size);
     console.log(project.resolutionAliases.size);
 
-    // const toto= project.storedPackages;
+    const toto= project.storedDescriptors;
 
-    // console.time("resolveEverything");
-    // await project.resolveEverything({
-    //   lockfileOnly: true,
-    //   report: new ThrowReport(),
-    // });
-    // console.timeEnd("resolveEverything");
-    // console.log(project.storedPackages.size);
-    // console.log(project.storedDescriptors.size);
-    // console.log(project.storedResolutions.size);
-    // console.log(project.originalPackages.size);
-    // console.log(project.workspacesByCwd.size);
-    // console.log(project.workspacesByIdent.size);
-    // console.log(project.resolutionAliases.size);
+    console.time("resolveEverything");
+    await project.resolveEverything({
+      lockfileOnly: true,
+      report: new ThrowReport(),
+    });
+    console.timeEnd("resolveEverything");
+    console.log(project.storedPackages.size);
+    console.log(project.storedDescriptors.size);
+    console.log(project.storedResolutions.size);
+    console.log(project.originalPackages.size);
+    console.log(project.workspacesByCwd.size);
+    console.log(project.workspacesByIdent.size);
+    console.log(project.resolutionAliases.size);
 
-    // const titi= project.storedPackages;
+    const titi= project.storedDescriptors;
 
-    // let nototo=0;
-    // for (let key of titi.keys()) {
-    //   if (!toto.get(key)) {
-    //     nototo++;
-    //   }
-    // }
+    let nototo=0;
+    let yototo=0;
+    for (let key of titi.keys()) {
+      if (!toto.get(key)) {
+        nototo++;
+        console.log("toto");
+        console.log(key);
+        console.log(titi.get(key).name);
+        console.log(titi.get(key).wasAddedByCrubier);
+        console.log(titi.get(key).reference);
+      } else {
+        yototo++;
+      }
+    }
 
-    // let notiti=0;
-    // for (let key of toto.keys()) {
-    //   if (!titi.get(key)) {
-    //     notiti++;
-    //   }
-    // }
+    let notiti=0;
+    let yotiti=0;
+    for (let key of toto.keys()) {
+      if (!titi.get(key)) {
+        notiti++;
+        console.log("titi");
+        console.log(key);
+        console.log(toto.get(key).name);
+        console.log(toto.get(key).wasAddedByCrubier);
+        console.log(toto.get(key).reference);
+      } else {
+        yotiti++;
+      }
+    }
+    console.log("difffffff");
+    console.log(nototo,notiti);
+    console.log(yototo,yotiti);
 
-    // console.log(nototo,notiti);
+
+    // resolveEverything: 2230.505ms
+    // 3079
+    // 3750
+    // 3750
+    // 2541
+    // 41
+    // 41
+    // 0
 
     const effectiveLocator = this.topLevel
       ? project.topLevelWorkspace.anchoredLocator

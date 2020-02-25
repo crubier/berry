@@ -1525,9 +1525,12 @@ export class Project {
         descriptors.push(descriptor);
       }
 
-      const key = descriptors.map(descriptor => {
-        return structUtils.stringifyDescriptor(descriptor);
-      }).sort().join(`, `);
+      // const key = descriptors.map(descriptor => {
+      //   return structUtils.stringifyDescriptor(descriptor);
+      // }).sort().join(`, `);
+
+
+      const key = structUtils.stringifyLocator(this.storedPackages.get(locatorHash));
 
 
       const peerResolutions:{[key:string]:any}={};
@@ -1566,17 +1569,40 @@ export class Project {
   }
 
   async hydrateVirtualPackages() {
+    console.time("readFilePromise");
     const virtualStatePath = ppath.join(this.cwd, this.configuration.get(`virtualStateFilename`));
     const content = await xfs.readFilePromise(virtualStatePath, `utf8`);
     const virtualStateFileData: {[key:string]:{virtualOf:string,peerResolutions:{[key:string]:string}}} = parseSyml(content);
+    console.timeEnd("readFilePromise");
+    console.log(this.storedPackages.size);
+    console.log(this.storedDescriptors.size);
+    console.log(this.storedResolutions.size);
+    console.log(this.originalPackages.size);
+    console.log(this.workspacesByCwd.size);
+    console.log(this.workspacesByIdent.size);
+    console.log(this.resolutionAliases.size);
+
+
+    console.time("originalPackages");
+
 
     // Not sure if this should be commented or not here:
-    for (const [locatorHash, pkg] of this.originalPackages.entries()) {
-      const desc = structUtils.convertLocatorToDescriptor(pkg);
-      this.storedPackages.set(pkg.locatorHash, pkg);
-      this.storedDescriptors.set(desc.descriptorHash, desc);
-      this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
-    }
+    for (const [locatorHash, pkg] of this.originalPackages.entries())
+      // const desc = structUtils.convertLocatorToDescriptor(pkg);
+      // console.log(pkg);
+      this.storedPackages.set(pkg.locatorHash, {...pkg,wasAddedByCrubier:false});
+      // this.storedDescriptors.set(desc.descriptorHash, desc);
+      // this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
+
+
+    console.timeEnd("originalPackages");
+    console.log(this.storedPackages.size);
+    console.log(this.storedDescriptors.size);
+    console.log(this.storedResolutions.size);
+    console.log(this.originalPackages.size);
+    console.log(this.workspacesByCwd.size);
+    console.log(this.workspacesByIdent.size);
+    console.log(this.resolutionAliases.size);
 
 
     for (const [virtualEntryNames, virtualEntry] of Object.entries(virtualStateFileData)) {
@@ -1602,7 +1628,7 @@ export class Project {
         for (const [name, resolution] of Object.entries(virtualEntry.peerResolutions))
           virtualPackage.dependencies.set(name as IdentHash, structUtils.parseDescriptor(resolution));
 
-        this.storedPackages.set(virtualPackage.locatorHash, virtualPackage);
+        this.storedPackages.set(virtualPackage.locatorHash, {...virtualPackage,wasAddedByCrubier:true});
         this.storedDescriptors.set(virtualDescriptor.descriptorHash, virtualDescriptor);
 
         this.storedResolutions.set(virtualDescriptor.descriptorHash, virtualPackage.locatorHash);
