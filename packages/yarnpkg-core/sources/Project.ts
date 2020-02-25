@@ -1570,13 +1570,13 @@ export class Project {
     const content = await xfs.readFilePromise(virtualStatePath, `utf8`);
     const virtualStateFileData: {[key:string]:{virtualOf:string,peerResolutions:{[key:string]:string}}} = parseSyml(content);
 
-    // // Not sure if this should be commented or not here:
-    // for (const [locatorHash, pkg] of this.originalPackages.entries()) {
-    //   const desc = structUtils.convertLocatorToDescriptor(pkg);
-    //   this.storedPackages.set(pkg.locatorHash, pkg);
-    //   this.storedDescriptors.set(desc.descriptorHash, desc);
-    //   this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
-    // }
+    // Not sure if this should be commented or not here:
+    for (const [locatorHash, pkg] of this.originalPackages.entries()) {
+      const desc = structUtils.convertLocatorToDescriptor(pkg);
+      this.storedPackages.set(pkg.locatorHash, pkg);
+      this.storedDescriptors.set(desc.descriptorHash, desc);
+      this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
+    }
 
 
     for (const [virtualEntryNames, virtualEntry] of Object.entries(virtualStateFileData)) {
