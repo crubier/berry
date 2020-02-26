@@ -106,7 +106,7 @@ export default class RunCommand extends BaseCommand {
         console.log(key);
         console.log(titi.get(key).name);
         console.log(titi.get(key).wasAddedByCrubier);
-        console.log(titi.get(key).reference);
+        console.log(titi.get(key).range);
       } else {
         yototo++;
       }
@@ -121,7 +121,7 @@ export default class RunCommand extends BaseCommand {
         console.log(key);
         console.log(toto.get(key).name);
         console.log(toto.get(key).wasAddedByCrubier);
-        console.log(toto.get(key).reference);
+        console.log(toto.get(key).range);
       } else {
         yotiti++;
       }

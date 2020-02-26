@@ -1590,7 +1590,7 @@ export class Project {
     for (const [locatorHash, pkg] of this.originalPackages.entries())
       // const desc = structUtils.convertLocatorToDescriptor(pkg);
       // console.log(pkg);
-      this.storedPackages.set(pkg.locatorHash, {...pkg,wasAddedByCrubier:false});
+      this.storedPackages.set(pkg.locatorHash, pkg);
       // this.storedDescriptors.set(desc.descriptorHash, desc);
       // this.storedResolutions.set(desc.descriptorHash, pkg.locatorHash);
 
@@ -1613,7 +1613,7 @@ export class Project {
       for (const virtualEntryName of virtualEntryNames.split(MULTIPLE_KEYS_REGEXP)) {
         const descriptor = structUtils.parseDescriptor(virtualEntryName);
 
-        this.storedDescriptors.set(descriptor.descriptorHash, descriptor);
+        this.storedDescriptors.set(descriptor.descriptorHash, {...descriptor,wasAddedByCrubier:true});
 
         const virtualLocator = structUtils.parseLocator(virtualEntryName);
         const virtualDescriptor = structUtils.convertLocatorToDescriptor(virtualLocator);
@@ -1629,7 +1629,7 @@ export class Project {
           virtualPackage.dependencies.set(name as IdentHash, structUtils.parseDescriptor(resolution));
 
         this.storedPackages.set(virtualPackage.locatorHash, {...virtualPackage,wasAddedByCrubier:true});
-        this.storedDescriptors.set(virtualDescriptor.descriptorHash, virtualDescriptor);
+        this.storedDescriptors.set(virtualDescriptor.descriptorHash, {...virtualDescriptor,wasAddedByCrubier:true});
 
         this.storedResolutions.set(virtualDescriptor.descriptorHash, virtualPackage.locatorHash);
       }
